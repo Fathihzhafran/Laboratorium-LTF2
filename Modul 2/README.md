@@ -110,45 +110,43 @@ Dari rangkaian bto serta harga dari setiap parameternya dengan asumsi VCC sebesa
 | S1 + S2                   |         2644         | 
 | S0 + S1 + S2              |         2736         | 
 
-Gunakan program dibawah ini! 
+Berikut merupakan penjelasan sekilas terkait program yang digunakan;
+#### Pustaka Program & Baud Rate;
 ```cpp
-/* Program : Analog Input
- * Membaca ADC yang terhubung ke 3 tombol
- * Ditampilkan ke OLED
- * Belajar:
- * - analogRead()
- * 
- * (c) Eko M. Budi, 2022
- */
-
-// pustaka standar EScope
+// Pustaka untuk komunikasi serial dengan software oscilloscope (opsional)
 #include <TFScope22.h>
 
-// pustaka I2C & OLED
+// Pustaka untuk komunikasi I2C & OLED
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 
-#define BAUD 500000
+#define BAUD 500000  // Kecepatan komunikasi serial
 
-// OLED --------------------------------
+```
+
+#### Inisiasi Serta Void Setup Program;
+```cpp
+
+// Inisialisasi objek OLED
 Adafruit_SSD1306 oled(OLED_WIDTH, OLED_HEIGHT, &Wire, OLED_RESET);
 
 void setup(void)
 {
-  // siapkan Serial
+  // Inisialisasi komunikasi serial
   Serial.begin(BAUD);
   Serial.println("\nAnalog Read Button");
   
-  // siapkan OLED
+  // Inisialisasi OLED
   if (!oled.begin(SSD1306_SWITCHCAPVCC, OLED_ADDR)) {
     Serial.println("OLED allocation failed");
-    for (;;); // Don't proceed, loop forever
+    for (;;); // Jika OLED gagal, hentikan program
   }
-  oled.setFont();
-  oled.setTextColor(WHITE);
+  
+  oled.setFont(); // Mengatur font default
+  oled.setTextColor(WHITE); // Mengatur warna teks
 
-  // pesan ke layar serial
+  // Menampilkan instruksi di Serial Monitor
   Serial.println("\nTekan tombol berturutan, catat nilai AD-nya");
   Serial.println("BT0");
   Serial.println("BT1");
@@ -158,40 +156,141 @@ void setup(void)
   Serial.println("BT0+BT3");
   Serial.println("BT0+BT2+BT3");  
 }
+```
 
+#### Inisiasi Void Loop dalam program 
+```cpp
 void loop(void)
 {
-  // baca BT0 beberapa kali, agar teliti
+  // Membaca nilai ADC dari tombol BT0 beberapa kali untuk mendapatkan rata-rata
   long sum = 0;
   for (int i=0; i<11; i++) {
     sum += analogRead(BT0);
   }  
-  int ad = sum / 11;
+  int ad = sum / 11; // Menghitung rata-rata nilai ADC
 
-  // konversi ke Volt
-  // hanya perkiraan, tak terkalibrasi
-  // Asumsi Vmax = 3,3 Volt
+  // Konversi nilai ADC ke milivolt (perkiraan, tidak terkalibrasi)
+  // Asumsi Vmax = 3.3V
   int mv = (3300L * ad )/ AD_MAX;
   
-  // tampilkan ke OLED
-  oled.clearDisplay();
+  // Menampilkan hasil ke OLED
+  oled.clearDisplay(); // Menghapus tampilan sebelumnya
 
   oled.setTextSize(1);
-  oled.setCursor(0, 0);  // Start at top-left corne
-  oled.printf("mv= %d", mv);
+  oled.setCursor(0, 0);  // Posisi awal teks di OLED
+  oled.printf("mv= %d", mv); // Menampilkan tegangan dalam milivolt
 
   oled.setTextSize(2);
   oled.setCursor(0, 12);
-  oled.printf("AD= %d", ad);
+  oled.printf("AD= %d", ad); // Menampilkan nilai ADC
   
-  oled.display();
+  oled.display(); // Menampilkan data pada OLED
   
-  delay(200);
+  delay(200); // Delay untuk memperlambat pembaruan tampilan
 }
 ```
+
+> [!WARNING]
+> Tolong pastikan treshold masing-masing di rentang yang sesuai agar dapat memudahkan praktikum berikutnya bahkan modul berikutnya!
+
 > [!IMPORTANT]
-> coba buat analisis mengapa kita perlu mengukur dan menentukan tegangan threshold dari 
-setiap skenario penekanan tombol?.
+> coba buat analisis mengapa kita perlu mengukur dan menentukan tegangan threshold dari setiap skenario penekanan tombol?
+
+### Percobaan 2: ANALAOG BUTTON 
+**Tujuan**: Memilah tegangan dari tombol menjadi sinyal digital yang dapat dikontrol.
+
+Selain dari analog input, pada percobaan ini kita dapat mengonversikan nilai analog dari setiap skenario penekanan tombolnya menjadi tiga nilai digital, yang dimana dapat mengatur nyala LED pada EScope sesuai dengan nilai digitalnya. konversi tersebut dapat dilihat dalam tabel dibawah ini,
+
+| Skenario Penekanan Tombol |     Nilai Tegangan   |      Nyala LED        |
+|---------------------------|----------------------|-----------------------|
+| S0                        |         001          |           L0          |
+| S1                        |         010          |           L1          |
+| S2                        |         100          |           L2          |
+| S0 + S1                   |         011          |        L0 + L2        |
+| S0 + S2                   |         101          |        L0 + L2        | 
+| S1 + S2                   |         110          |        L1 + L2        |
+| S0 + S1 + S2              |         111          |      L0 + L1 + L2     |
+
+Berikut merupakan penjelasan sekilas terkait program yang digunakan;
+#### Pustaka & Baud Rate yang digunakan;
+```ccp
+// Pustaka I2C & OLED
+#include <TFScope22.h>
+#include <Wire.h>
+#include <Adafruit_SSD1306.h>
+
+#define BAUD 500000  // Kecepatan komunikasi serial
+```
+
+### Insiasi Treshold & Void Setup
+
+> [!WARNING]
+> Ubah bagian tresholdsnya, setiap Escope memiliki nilai treshold yang berbeda. kecil kemungkinan memiliki nilai yang sudah sama, dan paling memungkinkan nilainya hanya mendekati saja
+
+```ccp
+// Treshold untuk analog button, nilai ini digunakan untuk membedakan tombol yang ditekan
+int ab_tresholds[] = {
+  1620,2420,2580,2740,2840,3070,3210 //UBAH BAGIAN INI!
+};
+
+// Deklarasi objek untuk membaca tombol analog dan mengontrol LED
+AnalogButton _btn(ab_tresholds);
+MultiLED _led;
+
+// Konfigurasi OLED --------------------------------
+Adafruit_SSD1306 oled(OLED_WIDTH, OLED_HEIGHT, &Wire, OLED_RESET);
+
+void setup(void)
+{
+  // Inisialisasi komunikasi serial
+  Serial.begin(BAUD);
+  Serial.println("\nAnalog Button");
+  Serial.println("\nPress one or more buttons");
+  
+  // Inisialisasi OLED
+  if (!oled.begin(SSD1306_SWITCHCAPVCC, OLED_ADDR)) {
+    Serial.println("OLED allocation failed");
+    for (;;); // Jika gagal, berhenti di loop tanpa batas
+  }
+  oled.setFont();          // Menggunakan font default
+  oled.setTextColor(WHITE); // Mengatur warna teks menjadi putih
+}
+```
+
+### Insiasi Void Loop program 
+```ccp
+void loop() {
+  // Membaca nilai analog dari tombol
+  int bt_analog = _btn.aRead();
+  
+  // Konversi nilai analog menjadi digital (dalam bentuk bit)
+  byte bt_bin = _btn.a2d(bt_analog); 
+   
+  // Menampilkan hasil pembacaan ke OLED
+  oled.clearDisplay(); // Bersihkan layar OLED sebelum menampilkan data baru
+
+  oled.setTextSize(1); // Ukuran teks kecil
+  oled.setCursor(0, 0);  // Set posisi teks ke pojok kiri atas
+  oled.printf("a= %d", bt_analog); // Tampilkan nilai analog yang dibaca
+
+  oled.setTextSize(2); // Ukuran teks lebih besar
+  oled.setCursor(0, 12);
+  oled.print("BTN=");
+  oled.print(bt_bin, BIN);  // Tampilkan nilai tombol dalam format biner
+  oled.display(); // Perbarui tampilan OLED
+
+  // Menampilkan status tombol ke LED
+  for (int i = 0; i < N_LED; i++) {
+    _led.write(i, (bt_bin >> i) & 1); // Menyalakan/mematikan LED sesuai tombol yang ditekan
+  }
+  
+  delay(200); // Delay untuk stabilitas pembacaan
+}
+```
+
+> [!IMPORTANT]
+> coba buat analisis dari apa yang tampil pada setiap skenario penekanan tombol?
+
 
 ### Percobaan 4: Kalibrasi ADC & DAC
 **Tujuan:** Mengkalibrasi ADC dan DAC agar pengukuran lebih akurat dengan membuat tabel lookup.
