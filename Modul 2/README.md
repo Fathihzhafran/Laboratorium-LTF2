@@ -11,7 +11,7 @@ Modul ini bertujuan untuk memahami konsep dasar Analog Input/Output (I/O) pada m
 
 ---
 
-## Teori Dasar ヽ(°〇°)ﾉ
+## Teori Dasar 
 ### 1. Analog-to-Digital Converter (ADC)
 ADC adalah komponen elektronik yang mengubah sinyal analog menjadi data digital. Pada ESP32, ADC memiliki resolusi 12-bit yang berarti dapat merepresentasikan nilai antara 0 hingga 4095. Namun, ADC ESP32 memiliki karakteristik non-linearitas pada tegangan rendah (<100mV) dan tinggi (>3100mV), sehingga perlu dilakukan kalibrasi agar hasil pengukuran lebih akurat.
 
@@ -174,10 +174,5 @@ Implementasikan regresi linier pada hasil pengukuran DC-Sweep untuk menemukan hu
 - Hitung slope (`m`) dan intercept (`b`) dengan formula regresi linier.
 
 ---
-
-## Referensi
-- [Dokumentasi ADC ESP32](https://docs.espressif.com/projects/esp-idf/en/latest/esp32s2/api-reference/peripherals/adc.html)
-- [INA219 Tutorial](https://diyi0t.com/ina219-tutorial-for-arduino-and-esp/)
-- [Interpolasi Linier](https://en.wikipedia.org/wiki/Linear_interpolation)
 
 
