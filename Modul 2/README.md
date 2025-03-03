@@ -1,6 +1,17 @@
-# Analog I/O dengan ESP32 𝑴𝒆𝒐𝒘. ฅ(•- •マ
+# Analog I/O dengan ESP32 
 
-## Tujuan
+Mari menyelam lebih dalam ke I/O dengan ESP32 ◝(ᵔᗜᵔ)◜
+
+> [!CAUTION]
+> jangan menyelam terlalu dalam ya nanti tenggelam susah baliknya (ᵕ•_•)
+
+isi dalam modul ini meliputi: 
+- Tujuan Praktikum
+- Teori Dasar (DIBACA)
+- Overview Terkait Praktikum
+- Mungkin Hint untuk tugas tantangan? (menarik ga sih??)
+
+## Tujuan ⊹₊⟡⋆
 Modul ini bertujuan untuk memahami konsep dasar Analog Input/Output (I/O) pada mikrokontroler ESP32 menggunakan modul EScope. Peserta diharapkan dapat:
 
 - Menggunakan Digital-to-Analog Converter (DAC) untuk mengeluarkan tegangan.
@@ -11,7 +22,7 @@ Modul ini bertujuan untuk memahami konsep dasar Analog Input/Output (I/O) pada m
 
 ---
 
-## Teori Dasar 
+## Teori Dasar 𓆝 𓆟 𓆞 𓆝 𓆟
 ### 1. Analog-to-Digital Converter (ADC)
 ADC adalah komponen elektronik yang mengubah sinyal analog menjadi data digital. Pada ESP32, ADC memiliki resolusi 12-bit yang berarti dapat merepresentasikan nilai antara 0 hingga 4095. Namun, ADC ESP32 memiliki karakteristik non-linearitas pada tegangan rendah (<100mV) dan tinggi (>3100mV), sehingga perlu dilakukan kalibrasi agar hasil pengukuran lebih akurat.
 
@@ -82,14 +93,176 @@ void loop() {
 
 ---
 
-## Praktikum
-### Percobaan 1: Analog Input
-**Tujuan:** Membaca tegangan dari tombol analog menggunakan ADC dan menampilkan nilainya.
+## Praktikum 
+
+### Percobaan 1: Analog Input 
+**Tujuan**: Membaca tegangan dari tombol analog menggunakan ADC dan menampilkan nilainya.
+
+Dari rangkaian bto serta harga dari setiap parameternya dengan asumsi VCC sebesar 3300, maka berikut merupakan variasi skenario yang mungkin akan dihasilkan oleh setiap button dan juga kombinasi tombol tersebut (dapat dikatakan threshold setiap button).
+
+| Skenario Penekanan Tombol | Tegangan BTO (mV)    |
+|---------------------------|----------------------|
+| S0                        |         1482         |
+| S1                        |         2135         |
+| S2                        |         2269         | 
+| S0 + S1                   |         2395         | 
+| S0 + S2                   |         2478         | 
+| S1 + S2                   |         2644         | 
+| S0 + S1 + S2              |         2736         | 
+
+Gunakan program dibawah ini! 
+```cpp
+/* Program : Analog Input
+ * Membaca ADC yang terhubung ke 3 tombol
+ * Ditampilkan ke OLED
+ * Belajar:
+ * - analogRead()
+ * 
+ * (c) Eko M. Budi, 2022
+ */
+
+// pustaka standar EScope
+#include <TFScope22.h>
+
+// pustaka I2C & OLED
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
+#define BAUD 500000
+
+// OLED --------------------------------
+Adafruit_SSD1306 oled(OLED_WIDTH, OLED_HEIGHT, &Wire, OLED_RESET);
+
+void setup(void)
+{
+  // siapkan Serial
+  Serial.begin(BAUD);
+  Serial.println("\nAnalog Read Button");
+  
+  // siapkan OLED
+  if (!oled.begin(SSD1306_SWITCHCAPVCC, OLED_ADDR)) {
+    Serial.println("OLED allocation failed");
+    for (;;); // Don't proceed, loop forever
+  }
+  oled.setFont();
+  oled.setTextColor(WHITE);
+
+  // pesan ke layar serial
+  Serial.println("\nTekan tombol berturutan, catat nilai AD-nya");
+  Serial.println("BT0");
+  Serial.println("BT1");
+  Serial.println("BT2");
+  Serial.println("BT0+BT1");
+  Serial.println("BT0+BT2");
+  Serial.println("BT0+BT3");
+  Serial.println("BT0+BT2+BT3");  
+}
+
+void loop(void)
+{
+  // baca BT0 beberapa kali, agar teliti
+  long sum = 0;
+  for (int i=0; i<11; i++) {
+    sum += analogRead(BT0);
+  }  
+  int ad = sum / 11;
+
+  // konversi ke Volt
+  // hanya perkiraan, tak terkalibrasi
+  // Asumsi Vmax = 3,3 Volt
+  int mv = (3300L * ad )/ AD_MAX;
+  
+  // tampilkan ke OLED
+  oled.clearDisplay();
+
+  oled.setTextSize(1);
+  oled.setCursor(0, 0);  // Start at top-left corne
+  oled.printf("mv= %d", mv);
+
+  oled.setTextSize(2);
+  oled.setCursor(0, 12);
+  oled.printf("AD= %d", ad);
+  
+  oled.display();
+  
+  delay(200);
+}
+```
+> [!IMPORTANT]
+> coba buat analisis mengapa kita perlu mengukur dan menentukan tegangan threshold dari 
+setiap skenario penekanan tombol?.
+
+### Percobaan 4: Kalibrasi ADC & DAC
+**Tujuan:** Mengkalibrasi ADC dan DAC agar pengukuran lebih akurat dengan membuat tabel lookup.
 
 **Langkah-Langkah:**
-1. Tekan tombol S0, S1, atau S2.
-2. ESP32 membaca tegangan dari tombol menggunakan ADC.
-3. Hasil ditampilkan pada Serial Monitor dan OLED.
+1. Menghubungkan DAC ke AI0 ESP32.
+2. Mengeluarkan tegangan dengan DAC dari 0V hingga 3.3V.
+3. Membaca tegangan menggunakan ADC.
+4. Membandingkan hasil pembacaan dengan nilai referensi.
+5. Membuat tabel lookup untuk interpolasi linier.
+
+```cpp
+void setup() {
+    Serial.begin(115200);
+}
+void loop() {
+    int da_mv = 1000;
+    int da_d = (long) da_mv * 255 / 3300;
+    dacWrite(AO0, da_d);
+    delay(500);
+}
+```
+
+### Percobaan 5: Pengukuran Operating Point (OP)
+**Tujuan:** Mengamati titik kerja suatu sistem elektronik berdasarkan tegangan dan arus.
+
+**Langkah-Langkah:**
+1. Menghubungkan sensor dengan ESP32.
+2. Mengatur input tegangan tetap menggunakan DAC.
+3. Membaca tegangan dan arus menggunakan INA219.
+4. Menganalisis kestabilan sistem berdasarkan hasil pengukuran.
+
+```cpp
+void setup() {
+    Serial.begin(115200);
+}
+void loop() {
+    int op_mv = 1500;
+    dacWrite(AO0, op_mv * 255 / 3300);
+    delay(500);
+}
+```
+
+### Percobaan 6: Pengukuran DC-Sweep
+**Tujuan:** Melakukan pengukuran sweeping tegangan DC untuk menganalisis karakteristik input-output.
+
+**Langkah-Langkah:**
+1. Menghubungkan sensor dengan ESP32.
+2. Mengatur tegangan dari 0V hingga 3.3V secara bertahap menggunakan DAC.
+3. Membaca tegangan dan arus menggunakan ADC dan INA219.
+4. Menyimpan hasil pengukuran untuk analisis lebih lanjut.
+
+```cpp
+void setup() {
+    Serial.begin(115200);
+}
+void loop() {
+    for (int i = 0; i <= 255; i++) {
+        dacWrite(AO0, i);
+        delay(100);
+    }
+}
+```
+
+### Percobaan 7: Kalibrasi dan Validasi Hasil Pengukuran
+**Tujuan:** Memvalidasi hasil pengukuran dengan menerapkan kalibrasi yang telah dilakukan sebelumnya.
+
+**Langkah-Langkah:**
+1. Menggunakan tabel lookup dari percobaan 4.
+2. Menguji keakuratan pengukuran dengan membandingkan hasil sebelum dan sesudah kalibrasi.
+3. Menggunakan hasil pengukuran untuk aplikasi lebih lanjut.
 
 ```cpp
 void setup() {
@@ -102,52 +275,7 @@ void loop() {
 }
 ```
 
-### Percobaan 2: Analog Button
-**Tujuan:** Memilah tegangan dari tombol menjadi sinyal digital yang dapat dikontrol.
-
-**Langkah-Langkah:**
-1. Menghubungkan tombol ke ESP32.
-2. Menggunakan library AnalogButton untuk mendeteksi tombol yang ditekan.
-3. Menampilkan hasil pada OLED dan Serial Monitor.
-
-```cpp
-void setup() {
-    Serial.begin(115200);
-}
-void loop() {
-    int ad_mv = analogRead(AI0);
-    if (ad_mv > 2000) Serial.println("Tombol S1 ditekan");
-    delay(500);
-}
-```
-
-### Percobaan 3: DAC & INA219
-**Tujuan:** Menggunakan DAC untuk menghasilkan sinyal tegangan dan membacanya menggunakan INA219.
-
-**Langkah-Langkah:**
-1. Menghubungkan DAC ke INA219.
-2. Menghasilkan sinyal DAC bertingkat dari 0 hingga 3.3V.
-3. Mengukur tegangan yang dihasilkan menggunakan INA219.
-
-```cpp
-#include <Wire.h>
-#include <Adafruit_INA219.h>
-Adafruit_INA219 ina219;
-void setup() {
-    Serial.begin(115200);
-    ina219.begin();
-}
-void loop() {
-    for (int da_out = 0; da_out <= 255; da_out++) {
-        dacWrite(AO0, da_out);
-        delay(10);
-        Serial.println(ina219.getBusVoltage_V());
-    }
-}
-```
-
 ---
-
 ## Tugas Tantangan (っ- ‸ - ς)
 ### 1. Membuat VAW Meter
 **Deskripsi:**
@@ -172,7 +300,10 @@ Implementasikan regresi linier pada hasil pengukuran DC-Sweep untuk menemukan hu
 **Hint:**
 - Gunakan metode Least Squares.
 - Hitung slope (`m`) dan intercept (`b`) dengan formula regresi linier.
-
 ---
 
+## Referensi
+- [Dokumentasi ADC ESP32](https://randomnerdtutorials.com/esp32-adc-analog-read-arduino-ide/)
+- [INA219 Tutorial](https://how2electronics.com/how-to-use-ina219-dc-current-sensor-module-with-arduino/)
+- [INA219 Overview](https://components101.com/modules/1na219-current-sensor-module)
 
