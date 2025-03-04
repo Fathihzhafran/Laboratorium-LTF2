@@ -213,7 +213,7 @@ Selain dari analog input, pada percobaan ini kita dapat mengonversikan nilai ana
 
 Berikut merupakan penjelasan sekilas terkait program yang digunakan;
 #### Pustaka & Baud Rate yang digunakan;
-```ccp
+```cpp
 // Pustaka I2C & OLED
 #include <TFScope22.h>
 #include <Wire.h>
@@ -227,7 +227,7 @@ Berikut merupakan penjelasan sekilas terkait program yang digunakan;
 > [!WARNING]
 > Ubah bagian tresholdsnya, setiap Escope memiliki nilai treshold yang berbeda. kecil kemungkinan memiliki nilai yang sudah sama, dan paling memungkinkan nilainya hanya mendekati saja
 
-```ccp
+```cpp
 // Treshold untuk analog button, nilai ini digunakan untuk membedakan tombol yang ditekan
 int ab_tresholds[] = {
   1620,2420,2580,2740,2840,3070,3210 //UBAH BAGIAN INI!
@@ -258,7 +258,7 @@ void setup(void)
 ```
 
 ### Insiasi Void Loop program 
-```ccp
+```cpp
 void loop() {
   // Membaca nilai analog dari tombol
   int bt_analog = _btn.aRead();
