@@ -1,0 +1,39 @@
+onversi nilai RPM dari per detik (RPS) ke per menit (RPM). RPM adalah hasil akhir yang lebih umum digunakan dalam mengukur kecepatan motor. Berikut adalah hasil konversi dan analisis ulang:
+
+``````````````````
+FREQ   RPM
+0001   43.56
+0100   525.72
+0200   598.8
+0400   543.6
+0800   396
+1000   378.6
+2000   270
+3000   0
+4000   16.2
+5000   333.6
+6000   420
+7000   474.6
+9000   513.6
+10000  545.4
+`````````````````
+
+Hasil Analisis;
+1. **Perbedaan antara FREQ kecil dan besar**: Seperti sebelumnya, terlihat bahwa ketika frekuensi PWM (FREQ) ditingkatkan dari 1 Hz hingga 10.000 Hz, kecepatan putaran motor (RPM) meningkat secara signifikan. Namun, perhatikan bahwa ada penurunan tajam pada RPM saat FREQ mencapai 3000 Hz, kemudian mulai dari 4000 Hz hingga 7000 Hz, terjadi fluktuasi dan peningkatan yang kurang konsisten dalam RPM sebelum mencapai stabil pada 9000 Hz.
+
+2. **Rentang FREQ dimana putaran motor masih baik**: Rentang FREQ di mana putaran motor masih meningkat secara signifikan adalah sekitar 1 Hz hingga 1000 Hz. Setelah itu, meskipun RPM masih naik, peningkatannya tidak lagi linear. Rentang 1000 Hz ke bawah masih memberikan peningkatan yang signifikan dalam RPM.
+
+3. **Kelakuan motor DC**: Dalam kasus ini, penurunan tajam pada RPM saat mencapai FREQ 3000 Hz mungkin disebabkan oleh batasan sistem motor DC atau kegagalan dalam merespons perubahan frekuensi dengan cepat. Fluktuasi dan peningkatan yang kurang konsisten pada rentang 4000 Hz hingga 7000 Hz mungkin disebabkan oleh faktor-faktor seperti resonansi sistem atau ketidaksempurnaan dalam kendali PWM atau pengaturan driver motor.
+
+Analisis ini menyoroti pentingnya pemahaman yang lebih mendalam tentang faktor-faktor yang mempengaruhi respons motor DC terhadap perubahan frekuensi PWM, serta pentingnya pengujian dan tuning yang cermat dalam mendesain sistem kontrol motor yang efisien.
+
+Alur Flowchart;
+1. **Start**: Program dimulai.
+2. **Setup Serial, Opto Coupler, dan DC Motor**: Pada langkah ini, port serial diatur untuk komunikasi dengan pengguna melalui Serial Monitor. Kemudian, konfigurasi untuk Opto Coupler dan DC Motor dilakukan. Opto Coupler diatur untuk menghitung jumlah putaran roda motor, sementara DC Motor diatur untuk dikendalikan dengan PWM.
+3. **Set motor_pwm = PWM_MAX/2**: PWM motor diatur menjadi setengah dari nilai maksimum. Hal ini dilakukan agar motor dimulai dengan kecepatan yang sedang.
+4. **Print "Ketikkan Freq (Hz)" dan Print Header**: Pesan "Ketikkan Freq (Hz)" dicetak ke Serial Monitor untuk memberi tahu pengguna apa yang harus dilakukan selanjutnya. Kemudian, header berisi judul kolom "FREQ" dan "RPM" juga dicetak.
+5. **Loop**: Program memasuki loop utama.
+6. **Jika ts_display time**: Pada setiap periode ts_display, program memeriksa apakah sudah waktunya untuk membaca dan mencetak RPM dari opto. Jika ya, RPM dibaca dari opto dan dicetak bersama dengan nilai FREQ saat ini.
+7. **Else if Serial available**: Jika tidak ada waktu ts_display, program memeriksa apakah ada input yang tersedia di Serial Monitor. Jika ada, artinya pengguna telah memasukkan nilai FREQ yang baru. FREQ baru dibaca dari Serial Monitor dan digunakan untuk mengatur ulang konfigurasi PWM motor. Setelah itu, header dicetak kembali.
+8. **Loop Back**: Program kembali ke awal loop dan mengulangi langkah-langkah di atas sampai program dihentikan.
+9. **End**: Program berakhir.

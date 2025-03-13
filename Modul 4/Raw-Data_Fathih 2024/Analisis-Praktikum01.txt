@@ -1,0 +1,32 @@
+Analisis yang diminta;
+
+1. **Kaitkan Harga WINDOW dengan Frekuensi Sinus Noise Kedua:**
+   Dalam program tersebut, WINDOW digunakan dalam kelas PeriodicMicros untuk menentukan jendela waktu di mana suatu tugas harus dieksekusi. Frekuensi sinus noise kedua mungkin tidak secara langsung terkait dengan WINDOW dalam kode tersebut, kecuali jika kita mengasumsikan bahwa ada korelasi antara WINDOW dan periode eksekusi tugas. Jika WINDOW diperbesar, tugas-tugas akan memiliki jendela waktu yang lebih besar untuk dieksekusi, yang dapat mengakibatkan frekuensi eksekusi tugas yang lebih rendah.
+
+2. **Dampak Pada Sinyal Seiring Bertambahnya WINDOW:**
+   Seiring bertambahnya WINDOW, jendela waktu untuk eksekusi tugas menjadi lebih besar. Dengan demikian, interval antara eksekusi tugas-tugas tersebut akan menjadi lebih panjang. Ini dapat mengakibatkan penurunan frekuensi eksekusi tugas dan juga peningkatan waktu respons sistem secara keseluruhan. Namun, perubahan ini mungkin tidak selalu linier dan akan bergantung pada ketergantungan tugas dan ketersediaan sumber daya sistem.
+
+3. **Observasi Ramp pada Sinyal Kotak (A01, A02, A03) dan Hubungannya dengan WINDOW:**
+   Pada A01, A02, dan A03, terjadi ramp yang berbeda karena jendela waktu (WINDOW) yang digunakan untuk eksekusi tugas berbeda untuk setiap tugas. Dalam kasus ini, A01 menggunakan jendela waktu yang lebih besar daripada A02 dan A03. Ketika jendela waktu diperbesar, tugas memiliki lebih banyak waktu untuk menyelesaikan eksekusi mereka, yang mungkin menghasilkan ramp yang lebih panjang karena sinyal kotak memiliki lebih banyak waktu untuk mencapai nilai maksimum sebelum turun kembali ke nol. Sebaliknya, ketika jendela waktu lebih kecil, tugas harus menyelesaikan eksekusi mereka dalam waktu yang lebih singkat, yang dapat menghasilkan ramp yang lebih tajam pada sinyal kotak. Jadi, ada hubungan langsung antara jendela waktu (WINDOW) dan karakteristik ramp pada sinyal kotak.
+
+Alur Flowchart;
+1. **Mulai:** 
+- Ini adalah titik awal dari program.
+2. **Inisialisasi (Setup):** 
+- Langkah-langkah inisialisasi awal, seperti mengatur komunikasi serial dan pesan awal.
+3. **Loop Utama:** 
+- Ini adalah loop utama program yang akan berjalan terus menerus.
+4. **Print Header:** 
+- Langkah ini mencetak header untuk analisis.
+5. **Set Ulang Periodik:** 
+- Di sini, tugas periodik diatur ulang untuk mempersiapkan eksekusi selanjutnya.
+6. **Loop Tugas Periodik:**
+ Ini adalah loop yang mengeksekusi tugas-tugas periodik.
+   - Pengecekan Waktu: Setiap tugas dicek untuk melihat apakah sudah waktunya untuk dieksekusi.
+   - Eksekusi Tugas: Jika tugas harus dieksekusi, langkah ini akan mengeksekusi tugas tersebut.
+   - Cetak Hasil: Hasil eksekusi tugas dicetak.
+   - Analisis: Langkah ini mencatat data untuk analisis.
+7. **Selesai?:** Langkah ini memeriksa apakah program telah selesai mengeksekusi sejumlah iterasi tertentu. Jika belum, program akan kembali ke langkah Loop Tugas Periodik. Jika sudah, program akan melanjutkan ke langkah Print Analisis.
+8. **Print Analisis:** Langkah ini mencetak hasil analisis setelah sejumlah iterasi telah dilakukan.
+9. **Menerima Masukan Delay:** Program menerima masukan dari pengguna untuk mengatur delay.
+10. **Akhir:** Ini adalah titik akhir dari program.

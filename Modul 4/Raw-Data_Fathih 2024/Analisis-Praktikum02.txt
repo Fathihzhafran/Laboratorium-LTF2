@@ -1,0 +1,41 @@
+Analisis tambahan;
+Program di atas adalah implementasi untuk menguji sensor opto coupler dengan menggunakan mikrokontroller ESP32. Berikut adalah analisis detailnya:
+1. **Header dan Library**:
+   - Program dimulai dengan beberapa komentar yang memberikan informasi tentang tujuan program dan referensi yang digunakan.
+   - Library yang digunakan adalah `TFScope22.h`, meskipun tidak ada penjelasan tentang fungsionalitasnya dalam komentar.
+2. **Definisi Konstanta dan Variabel Global**:
+   - DI_OPTO didefinisikan sebagai konstanta yang mewakili pin digital untuk sensor opto coupler.
+   - `volatile unsigned opto_counter` dideklarasikan untuk menghitung jumlah pulsa yang dideteksi oleh sensor opto coupler.
+   - `portMUX_TYPE opto_mux` dideklarasikan sebagai tipe data yang digunakan untuk menginisialisasi penguncian kritis untuk memastikan keselamatan operasi pada penghitungan counter.
+3. **Fungsi-fungsi Interrupt**:
+   - `optoISR()` adalah fungsi interrupt yang dipanggil ketika terjadi perubahan logika pada pin yang dihubungkan dengan sensor opto coupler. Ketika interrupt terjadi, fungsi ini akan meningkatkan `opto_counter` dan menampilkan pesan debug ke Serial Monitor.
+   - `portENTER_CRITICAL_ISR()` dan `portEXIT_CRITICAL_ISR()` digunakan untuk mengunci dan membuka penguncian kritis, memastikan keselamatan operasi pada `opto_counter` saat dilakukan akses bersamaan dari dua interrupt yang berbeda.
+4. **Fungsi-fungsi Utilitas**:
+   - `optoCount()` mengembalikan nilai `opto_counter` saat ini dalam penguncian kritis.
+   - `optoReset()` mengembalikan nilai `opto_counter` saat ini dan mengatur ulang `opto_counter` menjadi 0 dalam penguncian kritis.
+   - `optoStart()` digunakan untuk menginisialisasi penghitungan opto counter dengan mengatur nilai `opto_counter` menjadi 0, mengatur pin DI_OPTO sebagai input pull-up, dan menambahkan interrupt pada pin DI_OPTO untuk memanggil `optoISR()` saat terjadi falling edge.
+   - `optoStop()` digunakan untuk menghentikan penghitungan opto counter dengan melepaskan interrupt dari pin DI_OPTO.
+5. **Fungsi-fungsi untuk Plotting**:
+   - `plotSignal()` membaca status pin DI_OPTO dan menampilkannya ke Serial Monitor.
+   - `plotHeader()` menampilkan judul dan jumlah pulsa yang dihitung oleh opto counter ke Serial Monitor.
+6. **Setup()**:
+   - Pada fungsi setup, Serial diatur dengan kecepatan 500000 bps dan diinisialisasi setelah delay 1 detik.
+   - Fungsi `optoStart()` dipanggil untuk memulai penghitungan opto counter.
+7. **Loop()**:
+   - Pada loop utama, terdapat pemanggilan `plotHeader()` dan `plotSignal()` untuk menampilkan judul dan status sinyal ke Serial Monitor.
+   - Terdapat delay sebesar 10 milidetik antara setiap iterasi loop.
+
+Program tersebut dirancang untuk digunakan dengan mikrokontroller ESP32 untuk menguji sensor opto coupler. Fungsinya adalah untuk menghitung jumlah pulsa yang diterima oleh sensor dan menampilkan informasi tersebut ke Serial Monitor. Keamanan operasi pada variabel counter dijamin dengan penguncian kritis menggunakan `portENTER_CRITICAL_ISR()` dan `portEXIT_CRITICAL_ISR()` untuk memastikan akses yang aman dari interrupt.
+
+Alur Flowchart;
+1. Program dimulai dengan menjalankan fungsi `setup()`.
+2. Fungsi `optoStart()` dipanggil dari `setup()` untuk memulai pengaturan awal untuk menghitung pulsa.
+3. Attach interrupt pada pin yang sesuai dengan `DI_OPTO` dilakukan.
+4. Program masuk ke dalam loop utama `loop()`.
+5. Di dalam loop, pertama-tama fungsi `plotHeader()` dipanggil untuk menampilkan judul dan jumlah pulsa yang dihitung.
+6. Selanjutnya, program memanggil `optoCount()` untuk mendapatkan jumlah pulsa saat ini.
+7. Setelah itu, nilai yang didapatkan dari `optoCount()` ditampilkan di Serial Monitor.
+8. Kemudian, program memanggil `plotSignal()` untuk menampilkan status sinyal di pin DI_OPTO.
+9. Status sinyal dibaca dari pin DI_OPTO.
+10. Status sinyal tersebut kemudian ditampilkan di Serial Monitor.
+11. Terdapat delay sebelum program kembali ke awal loop untuk mengulangi proses tersebut.

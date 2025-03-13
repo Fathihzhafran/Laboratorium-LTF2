@@ -1,0 +1,51 @@
+FlashBuffer 
+FlashBuffer adalah pustaka sediaan (TFFlashBuffer), berupa ring buffer yang tersimpan di EEPROM (flash memory pada ESP32). Pustaka inilah yang dapat dimanfaatkan untuk menyimpan data secara permanen. Contoh penggunaan dasarnya adalah sebagai berikut: 
+
+#include <TFRingBuffer.h> 
+// konstanta banyak item ring 
+// Harus tak melebihi ukuran Flash Memory yang tersedia 
+#define N_DATA 10 
+// Alamat untuk meletakkan buffer 
+#define ADDR_BUFFER 0 
+// definisikan tipe data yang akan disimpan 
+#define T_DATA int 
+// Pesan kelas FlashBuffer 
+FlashBuffer<N_DATA, T_DATA> rbuff(ADDR_BUFFER); 
+int signal; 
+// di fungsi bisa dipanggil 
+void anyFunction() { 
+ rbuff.reset(); // mengosongkan 
+ rbuff.put(signal); // menaruh satu item ke akhir buffer 
+ rbuff.take(signal); // mengambil satu item dari awal buffer (FIFO) 
+ rbuff.pop(signal); // mengambil satu item dari akhir buffer 
+(LIFO) }
+
+Beberapa fungsi yang dapat digunakan pada FlashBuffer adalah sebagai berikut: 
+unsigned memSize() -> Menggembalikan ukuran memory yang diperlukan pada EEPROM 
+void init() -> Menyiapkan buffer di EPPROM (dari kosong) 
+void erase() -> Menghapus buffer dari EEPROM (tak akan bisa diload lagi) 
+bool load() -> Memuat buffer dari EPPROM (harus sudah di-init) 
+void put(TYPE &data) -> Menaruh data ke akhir buffer (head akan maju) 
+bool take(TYPE &data) -> Mengambil data dari awal buffer (tail akan maju) 
+bool pop(TYPE &data) -> Mengambil data dari akhir buffer (head akan mundur) 
+bool isFull() -> Memeriksa buffer sudah penuh (jika put, akan menghapus data pertama)
+bool isEmpty() -> Memeriksa apakah buffer kosong (tak bisa melakukan take / pop) 
+unsigned count() -> Melihat banyaknya item di buffer 
+unsigned row() -> Melihat Panjang buffer (banyak item yang bisa disimpan) 
+unsigned written() -> Melihat banyaknya data yang sudah pernah disimpan ke buffer ini 
+void getFirst(TYPE &d) -> Melihat data pertama (tail), tanpa mengambil 
+void getFirst(int i, TYPE &d) -> Melihat data pertama ke-I (tail+i), tanpa mengambil 
+void getLast(TYPE &d) -> Melihat data terakhir (head), tanpa mengambil 
+void getLast(int i, TYPE &d) -> Melihat data terakhir ke-I (head-i), tanpa mengambil
+
+Kalkulasi moving average pada waktu tertentu (t) ini bisa dirumuskan sebagai: 
+Implementasi kalkulasi ini bisa dilakukan pada suatu ring buffer, yaitu dengan mengambil data terakhir 
+sebanyak N (last(0) hingga last(n)), dijumlahkan dan kemudian dibagi dengan N. Meski demikian, perlakuan 
+khusus diperlukan jika data yang terukur belum mencapai N, dalam hal ini cukup rata-ratakan sebanyak data 
+yang sudah ada.
+
+Rangkuman;
+
+FlashBuffer adalah sebuah pustaka sediaan (TFFlashBuffer) yang berfungsi sebagai ring buffer yang disimpan di EEPROM, yang merupakan bagian dari flash memory pada ESP32. Pustaka ini memungkinkan penyimpanan data secara permanen di dalam EEPROM, dengan fungsi fungsi seperti reset, penambahan data ke buffer, pengambilan data dari buffer, dan penghapusan buffer. Penggunaannya dimulai dengan inisialisasi dan pengaturan ukuran buffer, kemudian data dapat ditambahkan, diambil, atau dihapus sesuai kebutuhan. 
+
+Salah satu contoh penggunaannya adalah untuk mengimplementasikan kalkulasi moving average pada waktu tertentu dengan menggunakan data dalam ring buffer. Kalkulasi ini melibatkan pengambilan sejumlah data terakhir dari buffer, penjumlahan nilai-nilai tersebut, dan pembagian dengan jumlah data tersebut untuk mendapatkan nilai rata-rata. Perlakuan khusus diperlukan jika jumlah data yang terukur belum mencapai ukuran buffer yang ditentukan, di mana nilai rata-rata dihitung berdasarkan jumlah data yang sudah ada. Dengan FlashBuffer, pengguna dapat dengan mudah mengelola data dalam EEPROM untuk keperluan penyimpanan dan pengolahan data yang bersifat persisten.

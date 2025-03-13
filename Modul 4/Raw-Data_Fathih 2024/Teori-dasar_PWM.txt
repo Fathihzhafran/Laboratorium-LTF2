@@ -1,0 +1,27 @@
+- PULSE WIDTH MODULATION (PWM) 
+Sebagaimana yang telah dipelajari pada Modul 1 Lab TF 2, development board ESP32 memiliki 30 pin yang terekspos dan masing-masing dapat digunakan untuk fungsi yang beragam (Gambar 4.2). Sebagai contoh, pin-pin pada ESP32 dapat difungsikan sebagai pin input analog-to-digital converter (ADC) yang berfungsi mencacah sinyal bentuk analog menjadi digital. Salah satu fungsi pin lain yang akan digunakan pada Modul 4 ini adalah fungsi untuk membangkitkan sinyal output pulse width modulation (PWM). 
+
+Semua pin GPIO pada ESP32 dapat difungsikan untuk mengeluarkan sinyal PWM (perhatikan simbol PWM di Gambar 4.2). Lebih lanjut, kita bisa mengeluarkan sinyal PWM dari 16 channel independen (channel 0 hingga channel 15) yang dapat dikonfigurasi dengan properties yang berbeda-beda. PWM sendiri merupakan teknik modulasi dengan mengubah lebar pulsa sesuai dengan angka digital tertentu, dengan nilai frekuensi dan amplitudo yang tetap. PWM dapat dianggap lawan dari ADC, yang mana suatu mikrokontroller 
+menghasilkan/membangkitkan output sinyal analog. 
+
+Pada praktikum Modul 4 ini, sinyal PWM akan digunakan untuk mengendalikan nyala gelap-terap lampu LED dan motor DC.
+Sesuai dengan namanya, sinyal PWM berbentuk sinyal pulsa, di mana amplitudo dan perioda satu siklus penuhnya tetap namun lebar pulsa ON-nya dapat diubah-ubah berdasarkan nilai digital tertentu. Bentuk sinyal PWM ditampilkan pada Gambar 4.3. ESP32 memiliki resolusi 1 hingga 16 bit PWM, artinya angka digital yang bisa dipilih untuk mengatur lebar pulsa PWM adalah 0 – 65535. Adapun resolusi standar yang biasa digunakan adalah 8 bit (angka digital 0 – 255). Lebar pulsa yang diatur dengan angka digital yang diberikan pada pin PWM akan menentukan tingkat tegangan keluaran rata-rata yang dihasilkan. Lebar pulsa (durasi lamanya sinyal ON) 
+dalam satu siklus sinyal disebut dengan istilah duty cycle.
+
+di mana Td adalah periode duty cycle, D adalah angka digital yang diatur/dikeluarkan, n adalah resolusi PWM, dan Tp adalah periode satu siklus penuh sinyal PWM (durasi lama sinyal ON + sinyal OFF). Besaran duty cycle juga pada umumnya dituliskan dalam bentuk persen, di mana persentase duty cycle sekali lagi akan menentukan tegangan keluaran rata-rata yang dibangkitkan oleh pin PWM (Gambar 4.4). Hubungan matematis antara duty cycle dengan tegangan keluaran rata-rata adalah Vout = Duty Cycle × Vin.
+
+Berikut ini adalah tahap-tahap umum dalam pemrograman mikrokontroller untuk membangkitkan sinyal PWM:
+1. Memilih channel PWM, terdapat channel 0 hingga 15.
+2. Mengatur frekuensi sinyal PWM (hingga 10 KHz).
+3. Menentukan resolusi sinyal duty cycle, pada umumnya 8 bit (0 – 255).
+4. Menentukan pin GPIO di mana sinyal output PWM akan dibangkitkan. Membuat rutin program untuk membangkitkan sinyal PWM dengan menyertakan channel serta duty cyclenya.
+
+Rangkuman; 
+
+Pulse Width Modulation (PWM) adalah teknik modulasi yang digunakan pada ESP32 untuk menghasilkan sinyal output dengan mengubah lebar pulsa sesuai dengan angka digital tertentu, tetapi dengan nilai frekuensi dan amplitudo yang tetap. Dalam praktikum Modul 4, sinyal PWM akan digunakan untuk mengendalikan nyala lampu LED gelap-terap dan motor DC. ESP32 memiliki kemampuan untuk menghasilkan sinyal PWM dari 16 channel independen dengan resolusi hingga 16 bit, meskipun resolusi standar yang sering digunakan adalah 8 bit. 
+
+Duty cycle, yang merupakan rasio antara durasi sinyal ON dalam satu siklus penuh dengan durasi total siklus, menentukan tegangan keluaran rata-rata yang dihasilkan oleh pin PWM. Tahap-tahap dalam pemrograman mikrokontroller untuk membangkitkan sinyal PWM mencakup pemilihan channel PWM, pengaturan frekuensi sinyal, penentuan resolusi duty cycle, dan penentuan pin GPIO yang akan menghasilkan sinyal output PWM, serta pembuatan rutin program untuk membangkitkan sinyal PWM dengan menyertakan channel dan duty cycle yang sesuai. Ini adalah langkah-langkah kunci yang perlu dipahami untuk mengimplementasikan pengendalian PWM dengan ESP32.
+
+
+
+

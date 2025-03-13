@@ -1,0 +1,25 @@
+Pada akuisisi data secara on-line, mikroprosesor melakukan pengukuran, lalu data diolah dan dikirimkan ke komputer secara terus menerus. Dengan demikian data perlu ditampung sementara secara berkelanjutan. Untuk itu diperlukan buffer data yang tak perlu terlalu panjang, namun harus bisa berjalan terus menerus. Struktur data yang efisien digunakan untuk ini adalah RingBuffer (Gambar 4.13). Prinsipnya adalah: 
+• Buffer berupa array dengan ukuran NDATA 
+• Array diisi sesuai index head yang dinaikkan satu sebelum mulai mengisi. Jika head sudah mencapai NDATA, maka diputar kembali ke 0. Namun jika saat akan mengisi ternyata head menjadi sama dengan tail, maka artinya buffer sudah penuh. Untuk akuisisi data, kebijakan yang diambil adalah tindis saja data yang lama. Kalau untuk operasi lain, biasanya data baru yang akan diabaikan. 
+• Array lalu dibaca sesuai index tail. Jika tail masih sama dengan head, tandanya buffer masih kosong dan jangan baca-apa apa. Kalau sudah selesai baca, maka tail dinaikkan 1, dan bila sudah mencapai NDATA, maka putar kembali ke 0.
+
+Untuk memudahkan pemrograman, telah disediakan pustaka TFRingBuffer. Kelas ini dapat menyimpan item berupa tipe data apa saja, termasuk array dan struct. Contoh penggunaannya adalah sebagai berikut:
+#include <TFRingBuffer.h> 
+// konstanta banyak item ring 
+#define N_DATA 10 
+// definisikan tipe data yang akan disimpan 
+#define T_DATA int 
+// Pesan kelas RingBuffer 
+// Ini adalah Teknik pemrograman baru yang disebut template 
+// Ikuti saja contohnya 
+RingBuffer<N_DATA, T_DATA> rbuff; 
+int signal; 
+// di fungsi bisa dipanggil 
+void any_function() { 
+ rbuff.reset(); // mengosongkan 
+ rbuff.put(signal); // menaruh satu item ke akhir buffer 
+ rbuff.take(signal); // mengambil satu item dari awal buffer (FIFO) 
+ rbuff.pop(signal); // mengambil satu item dari akhir buffer 
+(LIFO) 
+}
+

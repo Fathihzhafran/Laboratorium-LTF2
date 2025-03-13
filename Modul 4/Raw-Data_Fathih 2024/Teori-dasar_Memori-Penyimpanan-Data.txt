@@ -1,0 +1,18 @@
+Memori adalah bagian mikrokontroller yang berfungsi untuk menyimpan data. Secara umum, terdapat tiga jenis memori pada mikrokontroller, yaitu: 
+• SRAM (static random-access memory), memori kerja tempat program membuat dan memanipulasi variabel saat berjalan; bersifat volatile
+• ROM (Read only memory), tempat program inti (firmware) disimpan; bersifat non-volatile
+• Flash memory, tempat program disimpan; bersifat non-volatile
+• EEPROM (Electrically Erasable Programmable Read-Only Memory), yaitu ruang memori di mana program dapat menyimpan informasi jangka panjang; bersifat non-volatile
+
+Untuk ESP32, memori yang ada adalah: 
+• SRAM sebanyak 520 KB 
+• ROM sebanyak 448 KB 
+• Flash Memory sebanyak 4 MB (maksimum 4 KB difungsikan sebagai EPPROM)
+
+ESP32 tidak memilik EEPROM. Karena itu untuk menyimpan data, digunakan sebagian flash memory dialokasikan untuk penyimpan data, maksimum sebanyak 4 KB. Hal ini menjadi batasan pada banyak data yang dapat disimpan selama akuisisi data.
+
+Rangkuman;
+
+Memori pada mikrokontroler ESP32 terbagi menjadi SRAM, ROM, dan Flash memory. SRAM digunakan sebagai memori kerja yang bersifat volatile, tempat program menyimpan dan memanipulasi variabel saat berjalan. ROM menyimpan program inti atau firmware, sementara Flash memory digunakan untuk menyimpan program secara keseluruhan dan bersifat non-volatile. Meskipun ESP32 tidak memiliki EEPROM, Flash memory dapat dialokasikan untuk penyimpanan data jangka panjang dengan batasan maksimum sebanyak 4 KB. Hal ini menimbulkan batasan pada jumlah data yang dapat disimpan selama proses akuisisi data, namun memberikan fleksibilitas dalam menyimpan informasi penting.
+
+Memori pada mikrokontroler ESP32 terbagi menjadi SRAM, ROM, dan Flash memory. SRAM digunakan sebagai memori kerja yang bersifat volatile, tempat program menyimpan dan memanipulasi variabel saat berjalan. ROM menyimpan program inti atau firmware, sementara Flash memory digunakan untuk menyimpan program secara keseluruhan dan bersifat non-volatile. Meskipun ESP32 tidak memiliki EEPROM, Flash memory dapat dialokasikan untuk penyimpanan data jangka panjang dengan batasan maksimum sebanyak 4 KB. Hal ini menimbulkan batasan pada jumlah data yang dapat disimpan selama proses akuisisi data, namun memberikan fleksibilitas dalam menyimpan informasi penting.

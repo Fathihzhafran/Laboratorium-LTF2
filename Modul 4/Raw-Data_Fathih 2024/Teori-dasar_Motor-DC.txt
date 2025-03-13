@@ -1,0 +1,20 @@
+Motor DC
+Motor dc magnet permanen (permanent magnet dc motor/PMDC) dapat menghasilkan gerak putar/rotasi yang kontinu dengan sinyal kendali yang juga kontinu, sehingga dikategorikan sebagai continuous-drive actuator. Motor dc terdiri dari stator yang berbahan magnet permanen, komutator, brushes, sumbu, dan kumparan kawat rotor (Gambar 4.8).
+
+Motor DC banyak digunakan dalam perangkat-perangkat listrik, seperti:
+• Vibrator ponsel
+• Peralatan industri dan rumah tangga
+• Disk driver
+• Bor listrik DC
+• Kipas DC
+• Peralatan elektronik lainnya
+
+Pada bidang robotika, motor DC banyak digunakan. Rating tegangan motor DC bermacam-macam, namun yang akan kita gunakan pada praktikum Modul 4 ini adalah motor DC 5V (Gambar 4.9a). Arah putaran motor DC (searah atau berlawanan arah jarum jam) dapat diatur dengan membalik polaritas tegangan yang masuk ke terminal daya motor DC. Untuk memudahkan pengendalian arah putar motor DC, digunakan driver motor berbasis rangkaian H-Bridge. Pada praktikum Modul 4 ini, akan digunakan driver motor H-Bridge L9110 (Gambar 4.9b). Driver ini dapat mengendalikan dua buah motor DC secara independen, namun kali ini yang akan kita manfaatkan hanya untuk mengendalikan satu buah motor DC saja.
+
+Pemrograman sederhana untuk mengendalikan gerak satu buah motor DC menggunakan driver L9110 tersebut ditampilkan pada Kode 4.1. Perhatikan bahwa untuk mengendalikan motor DC, kita akan pergunakan kembali sinyal PWM dari mikrokontroller.
+
+Rangkuman;
+
+Motor DC magnet permanen merupakan jenis motor yang dapat menghasilkan gerakan rotasi kontinu dengan menggunakan sinyal kendali yang juga kontinu, sehingga digolongkan sebagai aktuator penggerak kontinu. Motor ini terdiri dari stator yang memiliki magnet permanen, komutator, sikat (brushes), sumbu, dan kumparan kawat rotor. Penggunaan motor DC sangat luas, digunakan dalam berbagai perangkat listrik seperti ponsel, peralatan industri dan rumah tangga, disk driver, bor listrik, kipas, dan berbagai peralatan elektronik lainnya.
+
+Dalam bidang robotika, motor DC sering digunakan, dan pada praktikum Modul 4 ini, motor DC 5V akan dipakai. Arah putaran motor dapat dikendalikan dengan membalik polaritas tegangan yang diberikan ke terminal daya motor, dan untuk mempermudah pengendalian, driver motor H-Bridge L9110 digunakan. Driver ini mampu mengendalikan dua motor DC secara independen, namun pada praktikum ini hanya satu motor DC yang akan dikendalikan. Pengendalian motor DC dilakukan dengan menggunakan sinyal PWM dari mikrokontroller untuk mengatur kecepatan dan arah putaran motor.

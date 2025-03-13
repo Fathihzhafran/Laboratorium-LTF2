@@ -1,0 +1,83 @@
+konversi nilai RPM yang awalnya dalam RPS menjadi RPM sesungguhnya (per minute). Untuk melakukan ini, cukup mengalikan nilai RPS dengan 60.
+
+Berikut adalah hasil konversi RPM dari data yang diberikan:
+
+Dari 255 ke berhenti:
+- 1st row: PWM 0255, RPM 0060
+- 2nd row: PWM 0255, RPM 0101
+- 3rd row: PWM 0255, RPM 0100
+- 4th row: PWM 0255, RPM 0101
+- 5th row: PWM 0255, RPM 0100
+- dst.
+
+Dari berhenti ke -255:
+- 1st row: PWM 0255, RPM 0101
+- 2nd row: PWM 0225, RPM 0104
+- 3rd row: PWM 0195, RPM 0106
+- 4th row: PWM 0165, RPM 0109
+- dst.
+
+Dari -10 sampai -255:
+- 1st row: PWM -010, RPM 0114
+- 2nd row: PWM -041, RPM 0113
+- 3rd row: PWM -072, RPM 0114
+- 4th row: PWM -103, RPM 0114
+- dst.
+
+Dari -255 sampai -10:
+- 1st row: PWM -255, RPM 0033
+- 2nd row: PWM -224, RPM 0114
+- 3rd row: PWM -193, RPM 0114
+- 4th row: PWM -162, RPM 0114
+- dst.
+
+sehingga dapat dianalisis sebagai berikut;
+1. **Nilai PWM Deadtime**:
+   Nilai PWM Deadtime tetap sekitar -10, sama dengan sebelumnya.
+
+2. **Nilai Maksimum RPM**:
+   Nilai maksimum RPM tetap sekitar 190, sama dengan sebelumnya.
+
+3. **Hubungan Input/Output RPM dan PWM**:
+   Hubungan antara PWM dan RPM masih tampak cukup linier, dengan RPM meningkat seiring dengan peningkatan PWM, dan sebaliknya.
+
+4. **Perbedaan dalam Hubungan Input/Output saat PWM Naik/Turun**:
+   Seperti sebelumnya, saat PWM naik, respons RPM cenderung lebih linier dibandingkan saat PWM turun. Hal ini mungkin disebabkan oleh faktor-faktor seperti inersia mekanis, hambatan gesekan, atau karakteristik elektromagnetik dalam motor.
+
+5. **Analisis Kelakuan Motor DC**:
+   Kelakuan motor DC tetap menunjukkan fluktuasi dalam responsnya terhadap perubahan PWM. Faktor-faktor seperti inersia mekanis, hambatan gesekan, dan karakteristik elektromagnetik tetap berperan dalam menentukan respons motor terhadap perubahan PWM.
+
+Alur Flowchart;
+1. **Inisialisasi dan Setup (Start - Setup Serial, Opto Coupler, Motor)**
+   - Program dimulai dengan melakukan inisialisasi, termasuk setup serial, opto coupler, dan motor DC.
+   - Nama program ditampilkan di serial monitor.
+   - Opto coupler diatur untuk mengukur putaran motor, dan pin-penanda (counter) serta waktu terakhir diatur.
+   - Motor DC disiapkan dengan menetapkan mode pin, menghubungkan motor A ke saluran PWM, dan mengatur frekuensi dan resolusi PWM.
+
+2. **User Input (Setup - Display "Enter PWM:")**
+   - Program meminta pengguna untuk memasukkan nilai PWM melalui serial monitor.
+   - Header "PWM  RPM" ditampilkan sebagai panduan.
+
+3. **Loop Utama (LOOP)**
+   - Program masuk ke dalam loop utama.
+   - Jika sudah waktunya untuk menampilkan data (berdasarkan periode yang ditentukan), program beralih ke langkah selanjutnya. Jika tidak, program memeriksa apakah ada input dari serial monitor.
+
+4. **Opto Data Retrieval and Display (LOOP - IF Time to Display)**
+   - Jika sudah waktunya menampilkan data, program:
+      - Mengambil data RPM dari opto coupler.
+      - Menampilkan PWM, RPM, dan arus ke serial monitor.
+      - Kembali ke awal loop utama.
+
+5. **User Input Handling (LOOP - ELSE IF Serial Available)**
+   - Jika tidak waktunya menampilkan data dan ada input dari serial monitor, program:
+      - Membaca nilai PWM yang dimasukkan oleh pengguna.
+      - Mengontrol motor DC sesuai dengan nilai PWM tersebut.
+      - Menampilkan kembali header "PWM  RPM" di serial monitor.
+      - Kembali ke awal loop utama.
+
+6. **Perulangan (END - LOOP)**
+   - Program terus melakukan perulangan antara menampilkan data dan menanggapi input pengguna melalui serial monitor.
+
+7. **Terminasi (END)**
+   - Program berakhir ketika dihentikan secara manual atau jika ada kondisi terminasi tertentu.
+

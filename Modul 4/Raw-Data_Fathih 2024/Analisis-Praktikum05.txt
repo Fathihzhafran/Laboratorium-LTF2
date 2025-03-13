@@ -1,0 +1,48 @@
+Analisis (Berdasarkan Program):
+1. **Respons Transien dengan Moving Average (MA)**:
+   - Moving Average (MA) masih dapat memberikan respons yang halus terhadap perubahan PWM meskipun dengan nilai yang sudah dikonversi menjadi RPM.
+   - Meskipun demikian, perhatian terhadap ukuran jendela (N_WINDOW) tetap penting agar MA dapat menangkap perubahan dengan respons yang memadai tanpa mengorbankan ketelitian.
+
+2. **Telitinya Hasil Pengukuran MA**:
+   - Telitinya hasil pengukuran MA dalam RPM tetap tergantung pada seberapa baik MA dapat menangkap perubahan dalam data, terutama perubahan yang lebih halus dan perubahan yang lebih besar.
+   - Semakin besar N_WINDOW, semakin halus hasil pengukuran MA, namun respons terhadap perubahan yang cepat bisa menjadi lebih lambat.
+
+3. **Cara Kerja Pengukuran Kecepatan Motor dengan Opto dan MA**:
+   - Meskipun hasil sudah dalam RPM, cara kerja pengukuran kecepatan motor dengan opto coupler dan MA tetap sama.
+   - Opto coupler masih mendeteksi putaran motor dan menghasilkan pulsa yang kemudian dihitung untuk mendapatkan kecepatan putaran motor dalam RPM.
+   - N_WINDOW dan periode pengukuran tetap mempengaruhi respons sistem terhadap perubahan dan kehalusan hasil pengukuran, meskipun dalam satuan RPM.
+   - Penggunaan periode pengukuran (ts_measure) yang lebih pendek akan meningkatkan respons terhadap perubahan, tetapi perlu diimbangi dengan beban pemrosesan yang lebih tinggi.
+
+Dengan demikian, konversi hasil ke RPM tidak mengubah prinsip dasar dari analisis sebelumnya. Masih penting untuk memperhatikan parameter seperti N_WINDOW dan periode pengukuran untuk mendapatkan hasil yang optimal dalam pengukuran kecepatan motor.
+
+Alur Flowchart;
+
+1. **Setup Awal:**
+   - Program dimulai dengan langkah-langkah inisialisasi awal, termasuk setup untuk Serial, Opto Coupler, dan DC Motor. Ini dilakukan hanya sekali pada awal eksekusi program.
+
+2. **Loop Utama:**
+   - Setelah setup awal selesai, program memasuki loop utama yang terus berjalan sampai dihentikan secara manual.
+   - Dalam loop ini, beberapa tugas dilakukan secara berulang.
+
+3. **Mengecek Waktu untuk Mengukur Data Opto:**
+   - Setiap iterasi loop, program memeriksa apakah sudah waktunya untuk mengukur data dari opto coupler.
+   - Jika ya, program akan melanjutkan ke langkah berikutnya.
+
+4. **Mengecek Waktu untuk Menampilkan Data Motor:**
+   - Program juga memeriksa apakah sudah waktunya untuk menampilkan data kecepatan motor.
+   - Jika ya, program akan melanjutkan ke langkah berikutnya.
+
+5. **Mengukur Data Opto:**
+   - Jika sudah waktunya untuk mengukur data dari opto coupler, program akan melakukan pengukuran terhadap jumlah pulsa opto coupler yang diterima selama periode tertentu.
+   - Data tersebut kemudian dimasukkan ke dalam buffer untuk diolah nanti.
+
+6. **Menghitung dan Menampilkan Kecepatan Motor:**
+   - Jika sudah waktunya untuk menampilkan data kecepatan motor, program akan mengambil data dari buffer dan menghitung kecepatan motor dalam RPM.
+   - Hasil kecepatan motor kemudian dicetak ke Serial Monitor untuk ditampilkan.
+
+7. **Mengecek Input dari Serial:**
+   - Program juga memeriksa apakah ada input yang masuk dari Serial Monitor.
+   - Jika ada, program akan membaca nilai PWM yang dimasukkan dan mengatur kecepatan motor sesuai dengan nilai tersebut.
+
+8. **Mengatur Kecepatan Motor dan Melanjutkan Loop:**
+   - Setelah melakukan tugas yang diperlukan (pengukuran, perhitungan, atau penanganan input), program akan melanjutkan loop utama untuk memeriksa kondisi lagi dari awal.

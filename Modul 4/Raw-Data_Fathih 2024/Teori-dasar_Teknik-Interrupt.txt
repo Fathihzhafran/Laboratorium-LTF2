@@ -1,0 +1,31 @@
+Teknik-Interrupt 
+Interupsi adalah fitur yang memungkinkan mikrokontroller untuk :
+• Mendeteksi adanya picuan (trigger) pada masukan digital.
+• Jika picuan muncul, seketika itu juga aliran program normal akan dihentikan.
+• Mikrokontroller memanggil suatu rutin kecil, interrupt service routine, untuk berjalan. Rutin ini harus menyelesaikan tugas secepat-cepatnya, lalu Return.
+• Program normal akan dilanjutkan kembali.
+
+Pada praktikum Modul 4 ini, teknik interrupet akan digunakan untuk menerima sinyal dari perangkat input berupa sensor optocoupler. Menerima sinyal dari perangkat input (misalnya tombol atau optocoupler) dengan interupsi akan jauh lebih andal dibandingkan membacanya memakai digitalRead biasa. Perhatikan beberapa hal berikut:
+• ESP32 bisa menerima interupsi semua pin GPIO.
+• Ada tiga jenis picuan yakni RISING (berubah dari LOW ke HIGH), FALLING (berubah dari HIGH ke LOW), dan CHANGE (berubah kapan saja ketika nilai pin berubah dari LOW ke HIGH atau HIGH ke LOW).
+• Rutin interupsi harus dibuat sebagai suatu fungsi void tersendiri.
+• Jika rutin interupsi perlu mengakses variabel global, maka variabel tersebut harus dideklarasikan 
+sebagai volatile.
+• Agar rutin interupsi siap beraksi, maka setup()harus memasangnya dulu dengan fungsi 
+attachInterrupt.
+• Jika di bagian rutin normal (loop dan semua fungsi yang terpanggil oleh loop) akan mengakses variabel global, maka harus dipastikan bahwa saat itu interupsi tidak boleh terjadi.
+
+Untuk memrogram interupsi, biasanya dipakai algoritma foreground-background seperti ditunjukkan pada Gambar 4.15. Penjelasan algoritma tersebut adalah sebagai berikut,
+• Rutin normal program (setup dan loop) berjalan sebagai background, yaitu proses prioritas rendah yang bisa di-interupsi kapan saja. Seperti biasa, rutin ini disarankan memakai algoritma event-driven (jalankan aksi bisa ada event).
+• Rutin interupsi (dalam hal ini INT Opto) berjalan sebagai foreground, yaitu proses prioritas tinggi yang akan dijalankan kapan saja jika ada picuan interupsi.
+• Antara foreground dan background, ada suatu buffer untuk saling bertukar data.
+
+Rangkuman; 
+
+Teknik interrupt pada mikrokontroller memungkinkan deteksi picuan pada masukan digital, yang menyebabkan aliran program normal dihentikan dan interrupt service routine (ISR) dipanggil untuk menjalankan tugas tertentu seketika. Pada praktikum Modul 4, teknik interrupt akan digunakan untuk menerima sinyal dari perangkat input seperti sensor optocoupler. Penting untuk memperhatikan beberapa hal, seperti jenis picuan (RISING, FALLING, CHANGE), pembuatan rutin interrupt sebagai fungsi void tersendiri, deklarasi variabel global sebagai volatile jika diakses oleh ISR, dan pemasangan interrupt menggunakan fungsi attachInterrupt dalam setup(). Selain itu, pemrograman interrupt mengikuti algoritma foreground-background, di mana rutin normal program berjalan sebagai background yang dapat diinterupsi oleh rutin interrupt yang berjalan sebagai foreground, dengan adanya buffer untuk saling bertukar data antara keduanya.
+
+Algoritma foreground-background pada pemrograman interrupt memastikan bahwa rutin normal program berjalan sebagai proses prioritas rendah yang dapat diinterupsi, sementara rutin interrupt berjalan sebagai proses prioritas tinggi yang dipanggil seketika jika terjadi picuan interupsi. Ini memungkinkan untuk menjalankan tugas prioritas tinggi dengan respons cepat tanpa mengganggu jalannya rutin normal program. Sistem ini memungkinkan adanya keterkaitan antara rutin normal program dan rutin interrupt, dengan buffer yang memfasilitasi pertukaran data antara keduanya. Dengan demikian, penggunaan teknik interrupt pada praktikum Modul 4 memungkinkan deteksi sinyal dari perangkat input dengan keandalan yang tinggi dan respon yang cepat, yang sangat penting untuk aplikasi yang membutuhkan responsibilitas yang tinggi.
+
+
+
+

@@ -1,0 +1,30 @@
+Akuisisi Data
+Pada praktikum ini, kita akan membangun suatu sistem akuisisi data berbasis mikrokontroller. Suatu mikrokontroller, tidak sanggup mengukur sinyal secara kontinu terus-menerus. Yang dapat dilakukan oleh mikrokontroller sebagai pengakuisisi data adalah melakukan pengukuran berkali-kali secara periodik. Pengukuran berkali-kali secara periodik dikenal dengan pencuplikan data (data sampling). Gambar berikut memperlihatkan contoh sinyal kontinyu S(t) yang telah dicuplik dengan periode sampling ts = T. Terlihat bahwa hasilnya adalah sinyal waktu diskrit (Si), digambarkan sebagai garis-garis vertikal dengan bulatan. Sinyal waktu diskrit adalah sinyal hanya mengandung informasi pada waktu-waktu tertentu saja (dinyatakan oleh indeks i). Dengan kata lain, pencuplikan akan menyebabkan adanya informasi yang hilang dari segi waktu. Untuk mengurangi informasi yang hilang, maka periode cuplik (T) perlu diperkecil seminimal mungkin. Namun seperti akan kita lihat nanti, ada beberapa hal yang membatasi hal ini.
+
+Diagram blok umum sistem akuisisi data dengan pengontrol mikro ditunjukkan pada Gambar 4.17 di atas. Bagian pertama (kita sebut Meter) berfungsi sebagai pengukur dan penampil data online yang terdiri atas: 
+• Sensor: adalah komponen yang berfungsi mengubah sinyal fisis menjadi sinyal listrik. Ada berbagai jenis sensor yang harus dipilih berdasarkan kondisi sinyal listrik yang akan diukur. 
+• Pengkondisi sinyal analog: berupa rangkaian elektronik yang berfungsi mengubah sinyal dari sensor menjadi sinyal yang sesuai dengan spesifikasi ADC (biasanya tegangan 0-5 V). 
+• Konverter Analog Ke Digital (ADC): adalah komponen untuk mengubah tegangan menjadi data biner yang dapat dibaca oleh mikrokontroller. Pada praktikum ini digunakan ADC internal ESP32 maupun INA-219. 
+
+Dalam hal penggunaan sensor opto-coupler yang digunakan pada praktikum Modul 4 ini, sinyal yang dibangkitkan sudah dalam bentuk digital (0/LOW atau 1/HIGH). Sehingga tidak diperlukan pengondisi sinyal analog dan konverter analog ke digital dalam kasus ini.
+
+• Periodic Timer: adalah komponen untuk memicu operasi sesuai selang waktu (interval) tertentu. Biasanya pengontrol-mikro selalu memiliki timer bawaan. Namun perlu diperhatikan bahwa timer hanya dapat memberikan waktu relatif sejak pengontrol-mikro di-reset. Jika akuisisi data memerlukan waktu absolut (sesuai tanggal dan jam di dunia nyata), maka diperlukan komponen real-time clock. 
+• Pencuplikan: bagian program yang akan dipicu oleh timer untuk mengukur (membaca) data. 
+• RingBuffer: data dari pencuplikan dimasukkan ke RingBuffer agar dapat diolah dengan mudah secara online. 
+• Pengolahan data digital: bertugas mengolah data yang tersimpan di RingBuffer agar diperoleh sinyal yang lebih baik. Dalam hal ini, akan digunakan moving average. 
+• Display: bagian program menampilkan hasil pengukuran, dalam hal ini Serial Plotter di komputer. 
+
+Selanjutnya bisa ditambahkan bagian kedua yang kita sebut Recorder, terdiri atas: 
+• FlashBuffer: menyimpan data ke EEPROM.
+• EEPROM : komponen memori untuk menyimpan data secara tetap (tak hilang walau mikro-kontroller mati). 
+
+Bagian terakhir adalah Sender, terdiri atas: 
+• Sender: bagian program yang membaca data dari FlashBuffer dan mengirim / unggah data. 
+• Serial: perangkat keras untuk komunikasi data ke komputer.
+
+Rangkuman; 
+
+Pada praktikum ini, dibangun suatu sistem akuisisi data berbasis mikrokontroller yang melakukan pengukuran secara periodik dengan interval tertentu. Sistem ini terdiri dari beberapa komponen utama, termasuk sensor sebagai pengubah sinyal fisis menjadi sinyal listrik, pengkondisi sinyal analog untuk mengubah sinyal sensor menjadi sesuai dengan spesifikasi ADC, dan ADC untuk mengonversi sinyal analog menjadi data digital. Terdapat juga timer periodik untuk memicu operasi pencuplikan data secara berkala, serta RingBuffer untuk menyimpan data pengukuran agar dapat diolah secara online. Selain itu, pengolahan data digital dilakukan dengan menggunakan teknik moving average untuk menghasilkan sinyal yang lebih baik, sementara hasil pengukuran ditampilkan melalui Serial Plotter di komputer.
+
+Komponen kedua, yang disebut Recorder, melibatkan FlashBuffer untuk menyimpan data ke EEPROM, yang merupakan memori non volatile yang dapat menyimpan data secara permanen. Komponen terakhir adalah Sender yang bertugas membaca data dari FlashBuffer dan mengirimkan atau mengunggah data, dengan dukungan dari Serial untuk komunikasi data ke komputer. Dengan struktur ini, sistem akuisisi data dapat melakukan pengukuran secara periodik, menyimpan data secara permanen, dan mengirimkan data untuk analisis lebih lanjut atau penyimpanan jangka panjang.
+

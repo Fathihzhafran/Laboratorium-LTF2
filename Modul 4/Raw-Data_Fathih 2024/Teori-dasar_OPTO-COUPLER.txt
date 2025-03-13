@@ -1,0 +1,76 @@
+SENSOR OPTO-COUPLER
+Kita dapat mengimplementasi pengukuran kecepatan rotasi sebuah motor DC dengan memanfaatkan modul opto-coupler. Modul opto-coupler terdiri dari sepasang transmitter dan sensor cahaya. Cahaya yang ditransmisikan oleh transmitter (LED) dapat berupa cahaya tampak maupun sinar inframerah. Sementara itu, sensor cahaya merupakan komponen yang sensitif terhadap cahaya, seperti phototransistor atau photodioda. Cara kerja opto-coupler diilustrasikan pada Gambar 4.11. Kegunaan opto-coupler selain sebagai pengukur kecetapan rotasi motor DC adalah sebagai saklar/switch elektronik yang dapat berfungsi secara otomatis. Terdapat dua konfigurasi pasangan transmitter dan sensor cahaya, yaitu saling berhadapan (slotted optocoupler) dan saling besebelahan (reflective optocoupler). Modul opto-coupler yang akan kita gunakan di Modul 4 ini adalah konfigurasi yang kedua, yaitu transmitter dan sensor cahaya ditempatkan saling berdampingan, namun masing-masing terisolasi secara terpisah. Dengan demikian, sensor cahaya akan menghasilkan keadaan HIGH apabila cahaya yang dikeluarkan oleh transmitter dipantulkan oleh suatu benda yang dapat memantulkan cahaya tersebut. Dalam hal ini, benda yang berperan untuk memantulkan cahaya dari transmitter adalah bilah/baling-baling motor DC.
+
+Modul opto-coupler yang akan digunakan pada praktikum Modul 4 ini adalah opto-coupler HW-870 (Gambar 4.12). Modul ini memiliki jarak pantulan deteksi antara 1 mm – 25 mm. Tegangan operasinya adalah 3,3V – 5 V. Kemudian bentuk keluarannya berupa output switch digital (0 dan 1). Kode sumber di bawah ini (Kode 4.2) merupakan contoh program sederhana untuk melakukan penghitungan (counter) pulsa sensor opto-coupler menggunakan teknik interrupt ketika sensor cahaya menerima pantulan sinar inframerah dari transmitter yang dipantulkan oleh bilah/baling-baling pada motor DC
+
+/* Program : Opto Coupler
+* Test Optocoupler Sensor
+* Dengan memakai interrupt untuk counter
+* 
+* Ref: https://www.theengineeringprojects.com/2021/12/esp32-
+interrupts.html
+* 
+* (c) Eko M. Budi, 2022
+*/
+
+#include <TFScope.h>
+#define DI_OPTO DI0
+volatile unsigned opto_counter = 0;
+portMUX_TYPE opto_mux = portMUX_INITIALIZER_UNLOCKED;
+void optoISR() {
+ portENTER_CRITICAL_ISR(&opto_mux);
+ opto_counter++;
+ portEXIT_CRITICAL_ISR(&opto_mux);
+}
+unsigned optoCount() {
+ unsigned count;
+ portENTER_CRITICAL_ISR(&opto_mux);
+ count = opto_counter;
+ portEXIT_CRITICAL_ISR(&opto_mux);
+ return count;
+}
+unsigned optoReset() {
+ unsigned count;
+ portENTER_CRITICAL_ISR(&opto_mux);
+ count = opto_counter;
+ opto_counter=0;
+ portEXIT_CRITICAL_ISR(&opto_mux);
+ return count;
+}
+void optoStart() {
+ opto_counter=0;
+ pinMode(DI_OPTO, INPUT_PULLUP);
+ attachInterrupt(digitalPinToInterrupt(DI_OPTO), optoISR, FALLING); 
+}
+void optoStop() {
+ detachInterrupt(digitalPinToInterrupt(DI_OPTO)); 
+}
+
+void plotSignal() {
+ bool d = digitalRead(DI_OPTO);
+ Serial.println(d); 
+}
+void plotHeader() {
+ Serial.print("Pulse Counter="); 
+ Serial.println(optoCount());
+}
+void setup() {
+ Serial.begin(500000);
+ delay(1000);
+ Serial.println();
+ Serial.println("OptoCoupler Test");
+ optoStart();
+}
+void loop() {
+ plotHeader();
+ plotSignal();
+ delay(10); 
+}
+
+Pada contoh kode program ini, gerak bilah motor DC digerakkan secara manual oleh tangan. Penghitungan / counter bilah motor DC secara otomatis akan dilakukan saat praktikum untuk menghitung kecepatan putar motor DC.
+
+Rangkuman;
+
+Pengukuran kecepatan rotasi motor DC dapat diimplementasikan menggunakan modul opto-coupler, yang terdiri dari transmitter dan sensor cahaya. Modul ini memanfaatkan prinsip pantulan cahaya dari bilah motor DC untuk mendeteksi putaran. Dalam konfigurasi modul opto-coupler yang dipilih, transmitter dan sensor cahaya ditempatkan berdampingan namun terisolasi secara terpisah, sehingga sensor cahaya akan menghasilkan sinyal HIGH ketika cahaya yang dipancarkan oleh transmitter dipantulkan oleh benda yang dapat memantulkan cahaya tersebut, seperti bilah motor DC. Pada praktikum Modul 4, modul opto-coupler HW-870 digunakan untuk melakukan penghitungan pulsa dengan menggunakan teknik interrupt, di mana sinyal inframerah dari transmitter yang dipantulkan oleh bilah motor DC dihitung secara otomatis oleh mikrokontroller ESP32 dengan kode program yang disertakan.
+
+Contoh program sederhana menggunakan teknik interrupt digunakan untuk menghitung pulsa sensor opto-coupler, di mana setiap pantulan sinar inframerah dari bilah motor DC akan memicu interrupt yang menginkrementasi counter. Penggunaan interrupt memungkinkan penghitungan pulsa yang akurat tanpa membebani CPU. Pada kode program, fungsi optoISR() digunakan sebagai interrupt service routine (ISR) untuk menginkrementasi counter, sementara fungsi-fungsi lainnya digunakan untuk memulai, menghentikan, mereset, dan membaca nilai counter. Selain itu, kode program juga memuat fungsi-fungsi untuk menampilkan data counter dan sinyal opto-coupler. Selama praktikum, penghitungan pulsa dilakukan secara otomatis saat motor DC diputar secara manual oleh tangan untuk mengukur kecepatan putaran motor.
